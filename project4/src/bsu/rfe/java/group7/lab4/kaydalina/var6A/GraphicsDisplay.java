@@ -185,55 +185,59 @@ public class GraphicsDisplay extends JPanel{
         // Отобразить график
         canvas.draw(graphics);
     }
-
-    protected boolean isFuncNumbersEven(Double[] point) {
-        //условие варианта
-        double value = point[1];
-        int znachenieFunc = (int) value;
-        int rest;
-        boolean isTrue = false;
-        while(znachenieFunc != 0)
-        {
-            rest = znachenieFunc % 10;
-            znachenieFunc /= 10;
-            if(rest % 2 == 0)
-                isTrue = true;
-            else
-                isTrue = false;
-        }
-
-        return isTrue;
-    }
+    
 
     // Отображение маркеров точек, по которым рисовался график
     protected void paintMarkers(Graphics2D canvas) {
         // Шаг 1 - Установить специальное перо для черчения контуров маркеров
         canvas.setStroke(markerStroke);
         // Выбрать черный цвета для контуров маркеров
-        canvas.setColor(Color.BLACK);
-        // Выбрать черный цвет для закрашивания маркеров внутри
-        canvas.setPaint(Color.BLACK);
+        //canvas.setColor(Color.BLACK);
 
         for (Double[] point: graphicsData) {
-            GeneralPath path=new GeneralPath();
-            // Инициализировать эллипс как объект для представления маркера
-            Ellipse2D.Double marker = new Ellipse2D.Double();
+            double value = point[1];
+            int znachenieFunc = (int) value;
+            int rest;rest = znachenieFunc;
+            int counter =0;
+            boolean isTrue = false;
+            while(znachenieFunc != 0)
+            {
+                if (znachenieFunc % 2==0){
+                rest/=10;
+                counter++;
+                }
+                if (counter == 2)
+                    isTrue=true;
+            }
+
+
+            if(isTrue==true){
+                // Выбрать черный цвета для контуров маркеров
+                canvas.setColor(Color.BLACK);}
+            else{
+                // Выбрать черный цвета для контуров маркеров
+                canvas.setColor(Color.RED);}
+
+
+                GeneralPath path = new GeneralPath();
+                // Инициализировать эллипс как объект для представления маркера
+                Ellipse2D.Double marker = new Ellipse2D.Double();
             /* Эллипс будет задаваться посредством указания координат его центра
             и угла прямоугольника, в который он вписан */
-            // Центр - в точке (x,y)
-            Point2D.Double center = xyToPoint(point[0], point[1]);
-            // Угол прямоугольника - отстоит на расстоянии (5.5,5.5)
-            Point2D.Double corner = shiftPoint(center, 5.5, 5.5);
-            // Задать эллипс по центру и диагонали
-            marker.setFrameFromCenter(center, corner);
-            canvas.draw(marker); // Начертить контур маркера
+                // Центр - в точке (x,y)
+                Point2D.Double center = xyToPoint(point[0], point[1]);
+                // Угол прямоугольника - отстоит на расстоянии (5.5,5.5)
+                Point2D.Double corner = shiftPoint(center, 5.5, 5.5);
+                // Задать эллипс по центру и диагонали
+                marker.setFrameFromCenter(center, corner);
+                canvas.draw(marker); // Начертить контур маркера
 
-
-            path.append(new Line2D.Double(center.getX() - 5.5, center.getY() - 0.0, center.getX() + 5.5, center.getY() + 0.0), true);
-            path.append(new Line2D.Double(center.getX() + 0.0, center.getY() + 5.5, center.getX() + 0.0, center.getY() - 5.5), true);
-            canvas.draw(path); // Начертить контур маркера
+                canvas.draw(new Line2D.Double(center, shiftPoint(center, -5.5, 0)));
+                canvas.draw(new Line2D.Double(center, shiftPoint(center, 5.5, 0)));
+                canvas.draw(new Line2D.Double(center, shiftPoint(center, 0, -5.5)));
+                canvas.draw(new Line2D.Double(center, shiftPoint(center, 0, 5.5)));
         }
-        
+
     }
 
     // Метод, обеспечивающий отображение осей координат
