@@ -9,10 +9,9 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
@@ -38,6 +37,7 @@ public class GraphicsDisplay extends JPanel{
     private BasicStroke graphicsIntStroke;
     // Различные шрифты отображения надписей
     private Font axisFont;
+
 
     public GraphicsDisplay() {
         // Цвет заднего фона области отображения - белый
@@ -214,28 +214,26 @@ public class GraphicsDisplay extends JPanel{
         // Выбрать черный цвет для закрашивания маркеров внутри
         canvas.setPaint(Color.BLACK);
 
-        // Шаг 2 - Организовать цикл по всем точкам графика
-        for (Double[] point : graphicsData) {
-            if(isFuncNumbersEven(point)) {
-                Point2D.Double center = xyToPoint(point[0], point[1]);
-                GeneralPath path = new GeneralPath();
-                path.moveTo(center.x + 0, center.y + 5);
-                path.lineTo(center.x + 0, center.y - 5);
-                path.lineTo(center.x + 0, center.y + 0);
-                path.lineTo(center.x - 5, center.y + 0);
-                path.lineTo(center.x + 5, center.y + 0);
-                path.lineTo(center.x - 4, center.y + 1);
-                path.lineTo(center.x + 0, center.y + 0);
-                path.lineTo(center.x + 5, center.y + 5);
-                path.lineTo(center.x - 5, center.y - 5);
-                path.lineTo(center.x + 0, center.y + 0);
-                path.lineTo(center.x - 5, center.y + 5);
-                path.lineTo(center.x + 5, center.y - 5);
+        for (Double[] point: graphicsData) {
+            GeneralPath path=new GeneralPath();
+            // Инициализировать эллипс как объект для представления маркера
+            Ellipse2D.Double marker = new Ellipse2D.Double();
+            /* Эллипс будет задаваться посредством указания координат его центра
+            и угла прямоугольника, в который он вписан */
+            // Центр - в точке (x,y)
+            Point2D.Double center = xyToPoint(point[0], point[1]);
+            // Угол прямоугольника - отстоит на расстоянии (5.5,5.5)
+            Point2D.Double corner = shiftPoint(center, 5.5, 5.5);
+            // Задать эллипс по центру и диагонали
+            marker.setFrameFromCenter(center, corner);
+            canvas.draw(marker); // Начертить контур маркера
 
-                canvas.draw(path);
 
-            }
+            path.append(new Line2D.Double(center.getX() - 5.5, center.getY() - 0.0, center.getX() + 5.5, center.getY() + 0.0), true);
+            path.append(new Line2D.Double(center.getX() + 0.0, center.getY() + 5.5, center.getX() + 0.0, center.getY() - 5.5), true);
+            canvas.draw(path); // Начертить контур маркера
         }
+        
     }
 
     // Метод, обеспечивающий отображение осей координат
