@@ -185,7 +185,7 @@ public class GraphicsDisplay extends JPanel{
         // Отобразить график
         canvas.draw(graphics);
     }
-    
+
 
     // Отображение маркеров точек, по которым рисовался график
     protected void paintMarkers(Graphics2D canvas) {
@@ -196,27 +196,34 @@ public class GraphicsDisplay extends JPanel{
 
         for (Double[] point: graphicsData) {
             double value = point[1];
-            int znachenieFunc = (int) value;
-            int rest;rest = znachenieFunc;
+            int  znachenieFunc = (int) value;
+            int rest; int k =0;
             int counter =0;
             boolean isTrue = false;
             while(znachenieFunc != 0)
             {
-                if (znachenieFunc % 2==0){
-                rest/=10;
-                counter++;
+                k++;
+                rest = znachenieFunc;
+                if (rest % 2==0){
+                    znachenieFunc=((int)(value/10));
+                    counter++;
                 }
-                if (counter == 2)
-                    isTrue=true;
+
+                if (counter == 0) {
+                    canvas.setColor(Color.RED);
+                    break;
+                }
+
+                else if (counter == 2) {
+                    canvas.setColor(Color.GREEN);
+                    break;
+                }
+                if (k==2)
+                    if (counter ==1){
+                        canvas.setColor(Color.RED);
+                        break;
+                    }
             }
-
-
-            if(isTrue==true){
-                // Выбрать черный цвета для контуров маркеров
-                canvas.setColor(Color.BLACK);}
-            else{
-                // Выбрать черный цвета для контуров маркеров
-                canvas.setColor(Color.RED);}
 
 
                 GeneralPath path = new GeneralPath();
